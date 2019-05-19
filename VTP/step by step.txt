@@ -1,0 +1,192 @@
+#konfigurasi switch S1,S2,S3#
+
+enable
+conf term
+hostname S3
+enable secret class
+no ip domain-lookup
+line console 0
+password cisco
+login
+line vty 0 15
+password cisco
+login
+end
+
+copy running-config startup-config
+
+#konfigurasi ethernet pada pc#
+ip address
+PC1 :172.17.10.21 
+PC2 :172.17.20.22
+PC3 :172.17.30.23
+PC4 :172.17.10.24
+PC5 :172.17.20.25
+PC6 :172.17.30.26
+subnet mask
+255.255.255.0
+255.255.255.0
+255.255.255.0
+255.255.255.0
+255.255.255.0
+255.255.255.0
+default gateway
+PC1: 172.17.10.1
+PC2: 172.17.20.1 
+PC3: 172.17.30.1 
+PC4: 172.17.10.1 
+PC5: 172.17.20.1 
+PC6: 172.17.30.1 
+
+#enable user port on s2 dan s3#
+conf term
+interface fa0/6
+switchport mode access
+no shutdown
+interface fa0/11
+switchport mode access
+no shutdown
+interface fa0/18
+switchport mode access
+no shutdown
+
+#. Check the current VTP settings on the three switches.
+S1,S2,S3
+show vtp status
+#Configure the operating mode, domain name, 
+and VTP password on all three switches.#
+S1:
+vtp mode server
+vtp domain Lab4
+vtp password cisco
+end
+S2:
+vtp mode client
+vtp domain Lab4
+vtp password cisco
+end
+S3:
+vtp mode transparent
+vtp domain Lab4
+vtp password cisco
+end
+#Configure trunking and the native VLAN 
+for the trunking ports on all three switches.#
+S1:
+interface fa0/1
+switchport mode trunk
+switchport trunk native vlan 99
+no shutdown
+interface fa0/2
+switchport mode trunk
+switchport trunk native vlan 99
+no shutdown
+end
+S2:
+conf term
+interface fa0/1
+switchport mode trunk
+switchport trunk native vlan 99
+no shutdown
+end
+S3:
+conf term
+interface fa0/2
+switchport mode trunk
+switchport trunk native vlan 99
+no shutdown
+end
+#Configure port security on the S2 and S3 
+access layer switches.#
+S2:
+conf term
+interface fa0/6
+switchport port-security 
+switchport port-security maximum 1
+switchport port-security mac-address sticky 
+interface fa0/11
+switchport port-security 
+switchport port-security maximum 1
+switchport port-security mac-address sticky
+interface fa0/18
+switchport port-security 
+switchport port-security maximum 1
+switchport port-security mac-address sticky
+end
+
+S3:
+conf term
+interface fa0/6
+switchport port-security 
+switchport port-security maximum 1
+switchport port-security mac-address sticky 
+interface fa0/11
+switchport port-security 
+switchport port-security maximum 1
+switchport port-security mac-address sticky
+interface fa0/18
+switchport port-security 
+switchport port-security maximum 1
+switchport port-security mac-address sticky
+end
+ #Configure VLANs on the VTP server.#
+vlan 99
+name management
+exit
+vlan 10
+name faculty/staff
+exit
+vlan 20 
+name students
+exit
+vlan 30
+name guest
+exit
+#Check if the VLANs created on S1 have been 
+distributed to S2 and S3.#
+show vlan brief 
+#Create a new VLAN on S2 and S3.#
+S2(config)#vlan 88
+%VTP VLAN configuration not allowed when device is in CLIENT mode.
+
+S3(config)#vlan 88
+S3(config-vlan)#name test
+S3(config-vlan)#
+Why are you prevented from creating a new VLAN on S2 but not S3?
+
+Delete VLAN 88 from S3.
+
+S3(config)#no vlan 88
+#Step 9. Manually configure VLANs.#
+vlan 99
+name management
+exit
+vlan 10
+name faculty/staff
+exit
+vlan 20 
+name students
+exit
+vlan 30
+name guest
+exit
+#
+S1:interface vlan 99
+ip address 172.17.99.11 255.255.255.0
+no shutdown
+S2:interface vlan 99
+ip address 172.17.99.12 255.255.255.0
+no shutdown
+S3:interface vlan 99
+ip address 172.17.99.13 255.255.255.0
+no shutdown
+# Assign switch ports to VLANs#
+untuk s2 dan S3
+interface fa0/6
+switchport access vlan 30
+interface fa0/11
+switchport access vlan 10
+interface fa0/18
+switchport access vlan 20
+end
+copy running-config startup-config

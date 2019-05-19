@@ -1,0 +1,114 @@
+#konfigurasi switch S1,S2,S3#
+
+enable
+conf term
+hostname S3
+enable secret class
+no ip domain-lookup
+line console 0
+password cisco
+login
+line vty 0 15
+password cisco
+login
+end
+copy running-config startup-config
+
+#konfigurasi ethernet pada pc#
+ip address
+PC1 :172.31.10.1
+PC2 :172.31.20.1
+PC3 :172.31.30.1
+PC4 :172.31.10.2
+PC5 :172.31.20.2
+PC6 :172.31.30.2
+subnet mask
+255.255.255.0
+255.255.255.0
+255.255.255.0
+255.255.255.0
+255.255.255.0
+255.255.255.0
+1. Check the current VTP settings on the three switches.
+S1,S2,S3
+show vtp status
+2.Configure the operating mode, domain name, 
+and VTP password on all three switches.#
+S1:
+vtp mode server
+vtp domain access
+vtp password lab4
+end
+S2:
+vtp mode client
+vtp domain access
+vtp password lab4
+end
+S3:
+vtp mode client
+vtp domain access
+vtp password lab4
+end
+#Configure trunking and the native VLAN 
+for the trunking ports on all three switches.#
+S1,S2,S3:
+interface range fa0/1-5
+switchport mode trunk
+switchport trunk native vlan 99
+no shutdown
+end
+#Configure port security on the S2 and S3 
+access layer switches.#
+S2 dan S3:
+conf term
+interface fa0/6
+switchport port-security 
+switchport port-security maximum 2
+switchport port-security mac-address sticky 
+interface fa0/11
+switchport port-security 
+switchport port-security maximum 2
+switchport port-security mac-address sticky
+interface fa0/18
+switchport port-security 
+switchport port-security maximum 2
+switchport port-security mac-address sticky
+end
+ #Configure VLANs on the VTP server.#
+conf term
+vlan 99
+name management
+vlan 10
+name engineering
+vlan 20
+name sales
+vlan 30
+name administration
+end
+
+#Check if the VLANs created on S1 have been 
+distributed to S2 and S3.#
+show vlan brief 
+#Create a new VLAN on S2 and S3.#
+S2(config)#vlan 88
+Step 7. Configure the management interface
+address on all three switches.
+S1:interface vlan 99
+ip address 172.17.99.11 255.255.255.0
+no shutdown
+S2:interface vlan 99
+ip address 172.17.99.12 255.255.255.0
+no shutdown
+S3:interface vlan 99
+ip address 172.17.99.13 255.255.255.0
+no shutdown
+# Assign switch ports to VLANs#
+untuk s2 dan S3
+interface range fa0/6-10
+switchport access vlan 30
+interface range fa0/11-17
+switchport access vlan 10
+int range fa0/18-24
+switchport access vlan 20
+end
+copy running-config startup-config
